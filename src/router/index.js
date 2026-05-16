@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '../views/loginView.vue'
 import DashboardView from '../views/DashboardView.vue'
-import ProductosView from '../views/ProductosView.vue'
+import ProductView from '../views/ProductView.vue'
 
 const routes = [
   {
@@ -9,29 +9,27 @@ const routes = [
     redirect: '/login'
   },
   {
-    
     path: '/login',
     name: 'Login',
     component: LoginView
   },
   {
     path: '/dashboard',
-    name: 'Dashboard',
     component: DashboardView,
-    // Vistas hijas — se muestran dentro del <router-view> del DashboardView
     children: [
       {
-        path: 'productos',
-        name: 'Productos',
-        component: ProductosView
+        path: '', name: 'Inicio' 
+      },
+      {
+       path: 'productos', name: 'Productos', component: ProductView 
       }
     ]
   }
 ]
- 
+
 const router = createRouter({
   history: createWebHistory(),
   routes
 })
- 
+
 export default router

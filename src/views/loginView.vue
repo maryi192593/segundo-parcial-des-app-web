@@ -106,7 +106,4 @@ function login() {
     error.value = true
   }
 }
-
-
-
 </script>

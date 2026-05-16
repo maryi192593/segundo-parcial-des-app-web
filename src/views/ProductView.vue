@@ -1,148 +1,89 @@
 <template>
   <div>
  
-    <!-- Encabezado y botón agregar -->
+    <!-- Encabezado con filtro activo -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h5 class="fw-bold mb-0">Gestion de Productos</h5>
-      <button @click="abrirModal()" class="btn btn-primary">
-        + Agregar producto
+      <div>
+        <h5 class="fw-bold mb-0">
+          {{ filtroActivo ? filtroActivo : 'Todos los productos' }}
+        </h5>
+        <p class="text-muted mb-0" style="font-size: 13px;">
+          {{ productosFiltrados.length }} productos encontrados
+        </p>
+      </div>
+      <button v-if="filtroActivo" @click="limpiarFiltro" class="btn btn-sm btn-outline-secondary">
+        Ver todos
       </button>
     </div>
  
-    <!-- Tabla Bootstrap estilizada -->
-    <div class="card shadow-sm mb-4">
-      <div class="card-body p-0">
-        <table class="table table-hover mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>#</th>
-              <th>Nombre</th>
-              <th>Categoria</th>
-              <th>Precio</th>
-              <th>Stock</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="productos.length === 0">
-              <td colspan="6" class="text-center text-muted py-4">
-                No hay productos. Agrega uno con el boton de arriba.
-              </td>
-            </tr>
-            <tr v-for="(producto, index) in productos" :key="producto.id">
-              <td>{{ index + 1 }}</td>
-              <td class="fw-bold">{{ producto.nombre }}</td>
-              <td>{{ producto.categoria }}</td>
-              <td>${{ Number(producto.precio).toLocaleString('es-CO') }}</td>
-              <td>
-                <span
-                  class="badge"
-                  :class="{
-                    'bg-success': producto.stock > 5,
-                    'bg-warning text-dark': producto.stock > 0 && producto.stock <= 5,
-                    'bg-danger': producto.stock === 0
-                  }"
-                >
-                  {{ producto.stock === 0 ? 'Agotado' : producto.stock + ' en stock' }}
-                </span>
-              </td>
-              <td>
-                <button @click="abrirModal(producto)" class="btn btn-sm btn-outline-primary me-1">
-                  Editar
-                </button>
-                <button @click="verDetalles(producto)" class="btn btn-sm btn-outline-secondary me-1">
-                  Ver
-                </button>
-                <button @click="eliminarProducto(producto.id)" class="btn btn-sm btn-outline-danger">
-                  Eliminar
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <!-- Alerta carrito -->
+    <div v-if="alertaCarrito" class="alert alert-success alert-dismissible" role="alert">
+      Producto agregado al carrito correctamente.
+      <button type="button" class="btn-close" @click="alertaCarrito = false"></button>
     </div>
  
-    <!-- Vista en tarjetas con ProductCardComponent -->
-    <h6 class="fw-bold mb-3">Vista en tarjetas</h6>
+    <!-- Tarjetas de productos -->
     <div class="row g-3 mb-4">
       <div
-        v-for="producto in productos"
-        :key="'card-' + producto.id"
+        v-for="producto in productosFiltrados"
+        :key="producto.id"
         class="col-6 col-md-4 col-lg-3"
       >
-        <ProductCardComponent
+        <ProductCard
           :producto="producto"
+          @agregar-carrito="agregarAlCarrito"
           @ver-detalles="verDetalles"
         />
       </div>
     </div>
  
-    <!-- Modal agregar / editar -->
-    <div v-if="modalVisible" class="modal-fondo" @click.self="cerrarModal">
-      <div class="card shadow p-4" style="width: 420px;">
- 
-        <h5 class="fw-bold mb-3">
-          {{ modoEdicion ? 'Editar producto' : 'Agregar producto' }}
-        </h5>
- 
-        <div v-if="errorModal" class="alert alert-danger">
-          Completa todos los campos correctamente.
-        </div>
- 
-        <div class="mb-3">
-          <label class="form-label">Nombre</label>
-          <input v-model="form.nombre" type="text" class="form-control" placeholder="Ej: MacBook Air M3" />
-        </div>
- 
-        <div class="mb-3">
-          <label class="form-label">Categoria</label>
-          <select v-model="form.categoria" class="form-select">
-            <option value="">Selecciona una categoria</option>
-            <option>Laptops</option>
-            <option>Smartphones</option>
-            <option>Audio</option>
-            <option>Monitores</option>
-            <option>Tablets</option>
-            <option>Perifericos</option>
-          </select>
-        </div>
- 
-        <div class="mb-3">
-          <label class="form-label">Precio</label>
-          <input v-model="form.precio" type="number" class="form-control" placeholder="Ej: 6499000" />
-        </div>
- 
-        <div class="mb-3">
-          <label class="form-label">Stock</label>
-          <input v-model="form.stock" type="number" class="form-control" placeholder="Ej: 10" />
-        </div>
- 
-        <div class="mb-4">
-          <label class="form-label">Descripcion</label>
-          <textarea v-model="form.descripcion" class="form-control" rows="2" placeholder="Descripcion del producto"></textarea>
-        </div>
- 
-        <div class="d-flex gap-2 justify-content-end">
-          <button @click="cerrarModal" class="btn btn-outline-secondary">Cancelar</button>
-          <button @click="guardarProducto" class="btn btn-primary">
-            {{ modoEdicion ? 'Guardar cambios' : 'Agregar' }}
-          </button>
-        </div>
- 
-      </div>
+    <!-- Sin resultados -->
+    <div v-if="productosFiltrados.length === 0" class="text-center text-muted py-5">
+      <p>No hay productos en esta categoria.</p>
+      <button @click="limpiarFiltro" class="btn btn-primary btn-sm">Ver todos</button>
     </div>
  
     <!-- Modal ver detalles -->
     <div v-if="productoDetalle" class="modal-fondo" @click.self="productoDetalle = null">
       <div class="card shadow p-4" style="width: 380px;">
-        <h5 class="fw-bold mb-3">Detalles del producto</h5>
-        <p><span class="text-muted">Nombre:</span> <strong>{{ productoDetalle.nombre }}</strong></p>
-        <p><span class="text-muted">Categoria:</span> {{ productoDetalle.categoria }}</p>
-        <p><span class="text-muted">Precio:</span> ${{ Number(productoDetalle.precio).toLocaleString('es-CO') }}</p>
-        <p><span class="text-muted">Stock:</span> {{ productoDetalle.stock }}</p>
-        <p><span class="text-muted">Descripcion:</span> {{ productoDetalle.descripcion }}</p>
-        <button @click="productoDetalle = null" class="btn btn-primary w-100 mt-2">Cerrar</button>
+        <img
+  :src="productoDetalle.imagen"
+  :alt="productoDetalle.nombre"
+  style="width: 100%; height: 180px; object-fit: contain; background: #f8f9fa; border-radius: 8px; margin-bottom: 16px;"
+  @error="(e) => e.target.src = '/images/placeholder.png'"
+/>
+ 
+        <h5 class="fw-bold mb-3">{{ productoDetalle.nombre }}</h5>
+        <span class="badge bg-primary mb-2" style="width: fit-content;">{{ productoDetalle.categoria }}</span>
+        <p class="text-muted" style="font-size: 13px;">{{ productoDetalle.descripcion }}</p>
+        <p class="fw-bold" style="font-size: 22px; color: #185FA5;">
+          ${{ Number(productoDetalle.precio).toLocaleString('es-CO') }}
+        </p>
+        <span
+          class="badge mb-3"
+          :class="{
+            'bg-success': productoDetalle.stock > 5,
+            'bg-warning text-dark': productoDetalle.stock > 0 && productoDetalle.stock <= 5,
+            'bg-danger': productoDetalle.stock === 0
+          }"
+          style="width: fit-content;"
+        >
+          {{ productoDetalle.stock === 0 ? 'Agotado' : 'Disponible' }}
+        </span>
+ 
+        <div class="d-flex gap-2 mt-2">
+          <button
+            @click="agregarAlCarrito(productoDetalle); productoDetalle = null"
+            class="btn btn-primary flex-grow-1"
+            :disabled="productoDetalle.stock === 0"
+          >
+            Agregar al carrito
+          </button>
+          <button @click="productoDetalle = null" class="btn btn-outline-secondary">
+            Cerrar
+          </button>
+        </div>
+ 
       </div>
     </div>
  
@@ -150,86 +91,78 @@
 </template>
  
 <script setup>
-import { ref, onMounted } from 'vue'
-import ProductCardComponent from '../components/ProductCardComponent.vue'
-import productosData from '../data/products.json'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import ProductCard from '../components/ProductCard.vue'
+import productosData from '../data/Product.json'
  
 const productos       = ref([])
-const modalVisible    = ref(false)
-const modoEdicion     = ref(false)
-const errorModal      = ref(false)
 const productoDetalle = ref(null)
+const alertaCarrito   = ref(false)
+const filtroActivo    = ref('')
  
-const formVacio = () => ({
-  id: null, nombre: '', categoria: '', precio: '', stock: '', descripcion: ''
-})
- 
-const form = ref(formVacio())
- 
-// LocalStorage
+// Carga productos
 function cargarProductos() {
   const guardados = localStorage.getItem('technova_productos')
   if (guardados) {
     productos.value = JSON.parse(guardados)
   } else {
     productos.value = productosData
-    guardarEnStorage()
+    localStorage.setItem('technova_productos', JSON.stringify(productosData))
   }
 }
  
-function guardarEnStorage() {
-  localStorage.setItem('technova_productos', JSON.stringify(productos.value))
+// Lee el filtro guardado por el Sidebar o Dashboard
+function cargarFiltro() {
+  filtroActivo.value = localStorage.getItem('technova_filtro') || ''
 }
  
-// CREATE y UPDATE
-function guardarProducto() {
-  errorModal.value = false
-  if (!form.value.nombre || !form.value.categoria || !form.value.precio || form.value.stock === '') {
-    errorModal.value = true
-    return
-  }
-  if (modoEdicion.value) {
-    const index = productos.value.findIndex(p => p.id === form.value.id)
-    if (index !== -1) productos.value[index] = { ...form.value }
+function limpiarFiltro() {
+  filtroActivo.value = ''
+  localStorage.removeItem('technova_filtro')
+}
+ 
+// Filtra los productos según la categoría activa
+const productosFiltrados = computed(() => {
+  if (!filtroActivo.value) return productos.value
+  return productos.value.filter(p => p.categoria === filtroActivo.value)
+})
+ 
+// Agrega al carrito en localStorage y dispara evento para actualizar Navbar
+function agregarAlCarrito(producto) {
+  const carrito = JSON.parse(localStorage.getItem('technova_carrito') || '[]')
+  const existe  = carrito.find(p => p.id === producto.id)
+  if (existe) {
+    existe.cantidad++
   } else {
-    productos.value.push({ ...form.value, id: Date.now() })
+    carrito.push({ ...producto, cantidad: 1 })
   }
-  guardarEnStorage()
-  cerrarModal()
+  localStorage.setItem('technova_carrito', JSON.stringify(carrito))
+  window.dispatchEvent(new Event('carrito-actualizado'))
+  alertaCarrito.value = true
+  setTimeout(() => { alertaCarrito.value = false }, 3000)
 }
  
-// DELETE
-function eliminarProducto(id) {
-  if (confirm('¿Seguro que quieres eliminar este producto?')) {
-    productos.value = productos.value.filter(p => p.id !== id)
-    guardarEnStorage()
-  }
-}
- 
-// READ detalles
 function verDetalles(producto) {
   productoDetalle.value = producto
 }
  
-// Modal
-function abrirModal(producto = null) {
-  errorModal.value = false
-  if (producto) {
-    modoEdicion.value = true
-    form.value = { ...producto }
-  } else {
-    modoEdicion.value = false
-    form.value = formVacio()
+onMounted(() => {
+  cargarProductos()
+
+  // Si no viene de una categoría del dashboard, limpia el filtro anterior
+  const vieneDeFiltro = localStorage.getItem('technova_desde_filtro')
+  if (!vieneDeFiltro) {
+    localStorage.removeItem('technova_filtro')
   }
-  modalVisible.value = true
-}
+  localStorage.removeItem('technova_desde_filtro')
+
+  cargarFiltro()
+  window.addEventListener('filtro-actualizado', cargarFiltro)
+})
  
-function cerrarModal() {
-  modalVisible.value = false
-  form.value = formVacio()
-}
- 
-onMounted(() => cargarProductos())
+onUnmounted(() => {
+  window.removeEventListener('filtro-actualizado', cargarFiltro)
+})
 </script>
  
 <style scoped>

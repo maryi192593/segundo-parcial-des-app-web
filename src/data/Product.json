@@ -1,6 +1,7 @@
 [
   {
     "id": 1,
+    "imagen": "/public/img/mba_13_m3_2024_hero.png",
     "nombre": "MacBook Air M3",
     "categoria": "Laptops",
     "precio": 6499000,
@@ -8,6 +9,7 @@
     "descripcion": "Laptop ultradelgada con chip Apple M3, 8GB RAM, 256GB SSD"
   },
   {
+    "imagen": "/public/img/co-galaxy-s24.webp",
     "id": 2,
     "nombre": "Samsung Galaxy S24",
     "categoria": "Smartphones",
@@ -16,6 +18,7 @@
     "descripcion": "Smartphone Android con pantalla AMOLED 6.2 pulgadas, 128GB"
   },
   {
+    "imagen": "/public/img/122345_original_local_1200x1050_v3_converted.webp",
     "id": 3,
     "nombre": "Sony WH-1000XM5",
     "categoria": "Audio",
@@ -24,6 +27,7 @@
     "descripcion": "Audifonos inalambricos con cancelacion de ruido premium"
   },
   {
+    "imagen": "/public/img/monitor-uhd-4k-resolucion-3840-x-2160-lg-27ul500-w.webp",
     "id": 4,
     "nombre": "LG 27 4K Monitor",
     "categoria": "Monitores",
@@ -32,6 +36,7 @@
     "descripcion": "Monitor 4K UHD 27 pulgadas, panel IPS, 60Hz, USB-C"
   },
   {
+    "imagen": "/public/img/us-int-mx-keys-gallery-graphite-3-4-front-1.png",
     "id": 5,
     "nombre": "Logitech MX Keys",
     "categoria": "Perifericos",
@@ -40,6 +45,7 @@
     "descripcion": "Teclado inalambrico retroiluminado para multidispositivo"
   },
   {
+    "imagen": "/public/img/ipad-pro-11-inch-13-inch.png",
     "id": 6,
     "nombre": "iPad Pro M4",
     "categoria": "Tablets",
@@ -48,6 +54,7 @@
     "descripcion": "Tablet profesional con chip M4, pantalla Liquid Retina 11 pulgadas"
   },
   {
+    "imagen": "/public/img/111851_sp880-airpods-Pro-2nd-gen.png",
     "id": 7,
     "nombre": "AirPods Pro 2",
     "categoria": "Audio",
@@ -56,6 +63,7 @@
     "descripcion": "Audifonos inalambricos con cancelacion activa de ruido y chip H2"
   },
   {
+    "imagen": "/public/img/notebook-xps-15-9530-t-black-gallery-1.avif",
     "id": 8,
     "nombre": "Dell XPS 15",
     "categoria": "Laptops",
@@ -64,6 +72,7 @@
     "descripcion": "Laptop premium con pantalla OLED 15.6 pulgadas, Intel Core i7"
   },
   {
+    "imagen": "/public/img/Negro1.png",
     "id": 9,
     "nombre": "Logitech MX Master 3",
     "categoria": "Perifericos",
@@ -72,6 +81,7 @@
     "descripcion": "Mouse inalambrico ergonomico de alta precision para productividad"
   },
   {
+    "imagen": "/public/img/es-c49j89-lc49j890dkrxen-531025297.avif",
     "id": 10,
     "nombre": "Samsung 49 Ultrawide",
     "categoria": "Monitores",
