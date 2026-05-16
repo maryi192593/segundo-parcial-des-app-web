@@ -1,0 +1,22 @@
+[
+  {
+    "email": "maryi@technova.com",
+    "password": "1234",
+    "rol": "admin"
+  },
+  {
+    "email": "anderson@technova.com",
+    "password": "abcd",
+    "rol": "admin"
+  },
+   {
+    "email": "user1@technova.com",
+    "password": "5678",
+    "rol": "user"
+  },
+   {
+    "email": "user2@technova.com",
+    "password": "efgh",
+    "rol": "user"
+  }
+]
